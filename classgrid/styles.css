@@ -357,7 +357,7 @@ button.danger:hover{background:var(--red-50);border-color:var(--red);}
 }
 .week-block .code{font-weight:700;font-size:12.5px;line-height:1.2;letter-spacing:-0.01em;}
 .week-block .code .section-tag{
-  font-family:var(--font-mono);font-weight:500;font-size:15px;opacity:.85;
+  font-family:var(--font-mono);font-weight:500;font-size:12px;opacity:.85;
   background:rgba(255,255,255,0.22);padding:1px 5px;border-radius:var(--r-pill);margin-left:4px;
 }
 .week-block .room{font-family:var(--font-mono);font-size:13px;opacity:.88;margin-top:3px;}
