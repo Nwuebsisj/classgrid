@@ -1,4 +1,4 @@
-const CACHE_NAME = 'classgrid-v1';
+const CACHE_NAME = 'classgrid-v2';
 const SHELL_FILES = [
   './',
   './index.html',
