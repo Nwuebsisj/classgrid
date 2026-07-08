@@ -1,7 +1,8 @@
 // Netlify function: POST { image: base64, mediaType: 'image/jpeg' }
 // Returns: { entries: [ { subject, section, room, type, day, start, end } ] }
 //
-// Requires env var ANTHROPIC_API_KEY set in Netlify site settings.
+// Requires env var GEMINI_API_KEY set in Netlify site settings.
+// Get a free key at https://aistudio.google.com/apikey
 
 const SYSTEM_PROMPT = `You read Philippine college registration forms / certificates of registration (COR) and extract each class's weekly meeting sessions as structured JSON.
 
@@ -24,6 +25,8 @@ If a row has one room but two sessions, reuse that room for both.
 
 Respond ONLY with a JSON object of the shape { "entries": [ ... ] } and nothing else — no markdown fences, no commentary.`;
 
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
@@ -42,36 +45,39 @@ exports.handler = async function (event) {
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2000,
-        system: SYSTEM_PROMPT,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType || 'image/jpeg', data: image } },
-              { type: 'text', text: 'Extract every class session from this registration form as instructed.' }
-            ]
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: {
+            parts: [{ text: SYSTEM_PROMPT }]
+          },
+          contents: [
+            {
+              role: 'user',
+              parts: [
+                { inlineData: { mimeType: mediaType || 'image/jpeg', data: image } },
+                { text: 'Extract every class session from this registration form as instructed.' }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0,
+            responseMimeType: 'application/json'
           }
-        ]
-      })
-    });
+        })
+      }
+    );
 
     if (!response.ok) {
       const errText = await response.text();
-      return { statusCode: 502, body: JSON.stringify({ error: 'Anthropic API error', detail: errText }) };
+      return { statusCode: 502, body: JSON.stringify({ error: 'Gemini API error', detail: errText }) };
     }
 
     const data = await response.json();
-    const textBlock = (data.content || []).find(b => b.type === 'text');
+    const textBlock = data?.candidates?.[0]?.content?.parts?.find(p => typeof p.text === 'string');
     if (!textBlock) {
       return { statusCode: 502, body: JSON.stringify({ error: 'No text response from model' }) };
     }
