@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassGrid — offline timetable</title>
+<meta name="theme-color" content="#0F2942">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.svg">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="mark">Class<span>Grid</span></div>
+    <div class="sub" id="net-status">offline-ready</div>
+  </header>
+
+  <section class="panel">
+    <span class="tag">Step 01 — Scan</span>
+    <div class="dropzone" id="dropzone">
+      <strong>Drop or tap to upload your COR</strong>
+      <p>JPG or PNG of your registration form. Parsed on-device to a weekly grid.</p>
+    </div>
+    <input type="file" id="file-input" accept="image/*">
+    <div class="status-line" id="status"></div>
+    <img id="thumb" class="thumb" style="display:none;">
+  </section>
+
+  <section class="panel">
+    <span class="tag">Step 02 — Your week</span>
+
+    <div class="view-switch">
+      <button id="tab-weekly" class="active">Weekly</button>
+      <button id="tab-daily">Daily</button>
+    </div>
+
+    <div id="weekly-view"></div>
+    <div id="daily-view" style="display:none;">
+      <div class="day-tabs" id="day-tabs"></div>
+      <div id="day-view"></div>
+    </div>
+
+    <button class="add" id="add-btn">+ Add class</button>
+    <div class="course-list" id="course-list"></div>
+    <div class="row-btns">
+      <button class="ghost" id="clear-btn">Clear schedule</button>
+    </div>
+  </section>
+
+  <footer class="note">Stored only on this device · works fully offline once installed</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <h3 id="sheet-title">Add class</h3>
+    <form id="entry-form">
+      <div class="field">
+        <label>Subject code</label>
+        <input type="text" id="f-subject" required placeholder="e.g. CRI 169">
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="f-desc" placeholder="e.g. Fund. of Criminal Investigation">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Day</label>
+          <select id="f-day">
+            <option>Mon</option><option>Tue</option><option>Wed</option>
+            <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select id="f-type">
+            <option value="lec">Lecture</option>
+            <option value="lab">Lab</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start time</label>
+          <input type="time" id="f-start" required>
+        </div>
+        <div class="field">
+          <label>End time</label>
+          <input type="time" id="f-end" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Room</label>
+        <input type="text" id="f-room" placeholder="e.g. BL 202">
+      </div>
+      <div class="row-btns">
+        <button type="button" class="ghost" id="cancel-btn">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
