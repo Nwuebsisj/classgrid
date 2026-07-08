@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClassGrid — offline timetable</title>
+<meta name="theme-color" content="#07111F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.svg">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">CG</div>
+      <div>
+        <div class="brand-name">ClassGrid</div>
+        <div class="brand-subtitle">Student planning hub</div>
+      </div>
+    </div>
+
+    <nav class="nav-links" aria-label="Primary">
+      <button class="nav-link active" type="button" data-target="overview">Overview</button>
+      <button class="nav-link" type="button" data-target="upload-section">Upload COR</button>
+      <button class="nav-link" type="button" data-target="schedule-section">Schedule</button>
+      <button class="nav-link" type="button" data-target="course-list">Courses</button>
+    </nav>
+
+    <div class="sidebar-card">
+      <p class="sidebar-card-label">Current status</p>
+      <div class="sidebar-card-value" id="net-status">offline-ready</div>
+      <p class="sidebar-card-copy">Your timetable is saved locally and stays accessible without a connection.</p>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Student planning workspace</p>
+        <h1>Plan your week with clarity.</h1>
+        <p class="topbar-copy">Turn your COR into a polished weekly timetable in seconds.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" type="button" id="add-btn-hero">+ Add class</button>
+      </div>
+    </header>
+
+    <section class="hero-grid" id="overview">
+      <article class="hero-card">
+        <div class="hero-card-header">
+          <div>
+            <p class="eyebrow">Today at a glance</p>
+            <h2>Stay ahead of your classes.</h2>
+          </div>
+          <span class="chip">AI-ready</span>
+        </div>
+
+        <div class="summary-grid">
+          <div class="stat-card">
+            <span class="stat-label">Scheduled classes</span>
+            <strong id="stat-count">0</strong>
+            <span class="stat-sub">weekly sessions</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active today</span>
+            <strong id="stat-today">0</strong>
+            <span class="stat-sub">classes on your current day</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Next up</span>
+            <strong id="stat-next">—</strong>
+            <span class="stat-sub">upcoming class</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel upload-panel" id="upload-section">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Step 01</p>
+            <h3>Upload your COR</h3>
+          </div>
+          <span class="chip chip-soft">Fast scan</span>
+        </div>
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload a COR image">
+          <div class="dropzone-icon">⬆</div>
+          <strong>Drop or tap to upload your COR</strong>
+          <p>JPG or PNG of your registration form. Parsed on-device to a weekly grid.</p>
+          <span class="dropzone-hint">Drag a file here or choose from your device</span>
+        </div>
+        <input type="file" id="file-input" accept="image/*">
+        <div class="status-card">
+          <div class="status-line" id="status">Ready to import your schedule.</div>
+          <img id="thumb" class="thumb" alt="Selected registration form preview" style="display:none;">
+        </div>
+      </article>
+    </section>
+
+    <section class="panel schedule-panel" id="schedule-section">
+      <div class="panel-head panel-head-space">
+        <div>
+          <p class="eyebrow">Step 02</p>
+          <h3>Your weekly timetable</h3>
+        </div>
+        <div class="view-switch" role="tablist" aria-label="Schedule view switcher">
+          <button id="tab-weekly" class="active" type="button">Weekly</button>
+          <button id="tab-daily" type="button">Daily</button>
+        </div>
+      </div>
+
+      <div id="weekly-view"></div>
+      <div id="daily-view" style="display:none;">
+        <div class="day-tabs" id="day-tabs"></div>
+        <div id="day-view"></div>
+      </div>
+
+      <div class="board-actions">
+        <button class="btn btn-primary" type="button" id="add-btn">+ Add class</button>
+        <button class="btn btn-secondary" type="button" id="clear-btn">Clear schedule</button>
+      </div>
+
+      <div class="course-list" id="course-list"></div>
+    </section>
+
+    <footer class="note">Stored only on this device · works fully offline once installed</footer>
+  </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <h3 id="sheet-title">Add class</h3>
+    <form id="entry-form">
+      <div class="field">
+        <label>Subject code</label>
+        <input type="text" id="f-subject" required placeholder="e.g. CRI 169">
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="f-desc" placeholder="e.g. Fund. of Criminal Investigation">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Day</label>
+          <select id="f-day">
+            <option>Mon</option><option>Tue</option><option>Wed</option>
+            <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select id="f-type">
+            <option value="lec">Lecture</option>
+            <option value="lab">Lab</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start time</label>
+          <input type="time" id="f-start" required>
+        </div>
+        <div class="field">
+          <label>End time</label>
+          <input type="time" id="f-end" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Room</label>
+        <input type="text" id="f-room" placeholder="e.g. BL 202">
+      </div>
+      <div class="row-btns">
+        <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+        <button class="btn btn-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
