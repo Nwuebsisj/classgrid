@@ -2,7 +2,7 @@ const PARSE_ENDPOINT = '/.netlify/functions/parse-schedule';
 const STORAGE_KEY = 'classgrid.schedule.v1';
 const DAY_ORDER = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const TODAY_DAY = DAY_ORDER[(new Date().getDay() + 6) % 7]; // JS Sun=0 -> Mon-first order
-const PALETTE = ['#3B6FD9','#1F8A73','#6C4BD9','#D9455F','#E07B39','#2AA8A0','#C0392B','#8E5AE0'];
+const PALETTE = ['#4F46E5','#0EA5E9','#10B981','#D9455F','#F59E0B','#2AA8A0','#8B5CF6','#EC4899'];
 
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('file-input');
@@ -16,6 +16,7 @@ const courseList = document.getElementById('course-list');
 const clearBtn = document.getElementById('clear-btn');
 const addBtn = document.getElementById('add-btn');
 const netStatus = document.getElementById('net-status');
+const netPulse = document.getElementById('net-pulse');
 const tabWeekly = document.getElementById('tab-weekly');
 const tabDaily = document.getElementById('tab-daily');
 
@@ -30,6 +31,10 @@ const fStart = document.getElementById('f-start');
 const fEnd = document.getElementById('f-end');
 const fRoom = document.getElementById('f-room');
 
+// Dynamic Live Metric Elements
+const statClasses = document.getElementById('stat-classes');
+const statLabs = document.getElementById('stat-labs');
+
 let activeDay = null;
 let editingIndex = null;
 
@@ -40,6 +45,15 @@ function loadSchedule(){
 }
 function saveSchedule(entries){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  updateGlobalMetrics(entries);
+}
+
+// Update Premium SaaS Analytical Dashboard Counters Accurately
+function updateGlobalMetrics(entries) {
+  if(!statClasses || !statLabs) return;
+  statClasses.textContent = entries.length;
+  const labCount = entries.filter(e => e.type === 'lab').length;
+  statLabs.textContent = labCount;
 }
 
 // ---------- upload flow ----------
@@ -61,7 +75,10 @@ fileInput.addEventListener('change', e => {
 
 function setStatus(msg, kind){
   statusEl.textContent = msg;
-  statusEl.className = 'status-line' + (kind ? ' ' + kind : '');
+  const parent = statusEl.parentElement;
+  if (parent) {
+    parent.className = 'status-line-container' + (kind ? ' ' + kind : '');
+  }
 }
 
 async function handleFile(file){
@@ -69,14 +86,14 @@ async function handleFile(file){
   thumbEl.style.display = 'block';
 
   if(!navigator.onLine){
-    setStatus('You are offline — connect once to scan a new COR. Existing schedule still works below.', 'err');
+    setStatus('Offline state active — reconnect network to perform autonomous document ingestion analysis.', 'err');
     return;
   }
 
-  setStatus('Reading image…');
+  setStatus('Reading uploaded source data document channels…', 'loading');
   try{
     const base64 = await fileToBase64(file);
-    setStatus('Parsing schedule…');
+    setStatus('Transmitting payload data array to AI engine core rules matrices…', 'loading');
     const res = await fetch(PARSE_ENDPOINT, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
@@ -84,21 +101,21 @@ async function handleFile(file){
     });
     if(!res.ok) throw new Error('Server returned ' + res.status);
     const data = await res.json();
-    if(!data.entries || !data.entries.length) throw new Error('No subjects detected');
+    if(!data.entries || !data.entries.length) throw new Error('No discrete structural academic sessions verified');
 
     const existing = loadSchedule();
     const merged = existing.length
-      ? (confirm(`Found ${data.entries.length} class sessions. Replace your current schedule? (Cancel = add to it)`)
+      ? (confirm(`Discovered ${data.entries.length} valid entries. Overwrite current local system manifest data rules maps entirely? (Cancel merges new streams into database)`)
           ? data.entries
           : existing.concat(data.entries))
       : data.entries;
 
     saveSchedule(merged);
     render();
-    setStatus(`Added ${data.entries.length} sessions.`, 'ok');
+    setStatus(`Successfully ingested and mapped ${data.entries.length} structural items cleanly.`, 'ok');
   }catch(err){
     console.error(err);
-    setStatus('Could not parse that image: ' + err.message, 'err');
+    setStatus('Ingestion process terminal failure error encountered: ' + err.message, 'err');
   }
 }
 
@@ -138,9 +155,11 @@ function escapeHtml(s){
 function render(){
   const entries = loadSchedule();
   const days = usedDays(entries);
+  
+  updateGlobalMetrics(entries);
 
   if(!days.length){
-    weeklyViewEl.innerHTML = '<div class="empty-note">No classes yet — scan your COR above, or add one manually.</div>';
+    weeklyViewEl.innerHTML = '<div class="empty-note"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>No course structural records detected inside the dynamic system storage indices framework yet. Ingest your COR above to build out the schedule map grid automatically.</div>';
     dayTabsEl.innerHTML = '';
     dayViewEl.innerHTML = '';
     courseList.innerHTML = '';
@@ -170,12 +189,12 @@ function renderWeekly(entries, days){
   for(let m = minStart; m <= maxEnd; m += 120){
     const top = (m - minStart) * pxPerMin;
     const h = Math.floor(m/60);
-    const label = h < 12 ? `${h===0?12:h}a` : `${h===12?12:h-12}p`;
+    const label = h < 12 ? `${h===0?12:h} AM` : `${h===12?12:h-12} PM`;
     hourLabels += `<div class="label" style="top:${top}px;">${label}</div>`;
   }
 
   const headers = days.map(d => `
-    <div style="flex:1;min-width:110px;">
+    <div class="day-header-wrapper">
       <div class="day-header${d===TODAY_DAY?' today':''}">${d}${d===TODAY_DAY?'<span class="dot"></span>':''}</div>
     </div>`).join('');
 
@@ -183,13 +202,15 @@ function renderWeekly(entries, days){
     const dayEntries = entries.map((e,i)=>({...e,_idx:i})).filter(e => e.day === day);
     const blocks = dayEntries.map(e => {
       const top = (timeToMinutes(e.start) - minStart) * pxPerMin;
-      const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 44);
+      const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 54);
       const isNow = day === TODAY_DAY && nowMinutes >= timeToMinutes(e.start) && nowMinutes < timeToMinutes(e.end);
-      return `<div class="week-block" data-idx="${e._idx}" style="top:${top}px;height:${height}px;background:${colorForSubject(e.subject)};">
-        <div class="pill">${fmt(e.start)}–${fmt(e.end)}</div>
-        <div class="code">${escapeHtml(e.subject)}</div>
-        <div class="room">${escapeHtml(e.room || '')}</div>
-        ${isNow ? '<div class="now-badge">Now</div>' : ''}
+      return `<div class="week-block" data-idx="${e._idx}" style="top:${top}px;height:${height}px;background-color:${colorForSubject(e.subject)};">
+        <div>
+          <div class="pill">${fmt(e.start)} – ${fmt(e.end)}</div>
+          <div class="code">${escapeHtml(e.subject)}</div>
+        </div>
+        <div class="room">${escapeHtml(e.room || 'N/A')}</div>
+        ${isNow ? '<div class="now-badge">ACTIVE</div>' : ''}
       </div>`;
     }).join('');
     return `<div class="day-col" style="height:${totalHeight}px;">${blocks}</div>`;
@@ -198,7 +219,7 @@ function renderWeekly(entries, days){
   weeklyViewEl.innerHTML = `
     <div class="week-scroll">
       <div class="week-headers">
-        <div style="width:38px;flex-shrink:0;"></div>
+        <div style="width:54px;flex-shrink:0;background:white;border-right:1px solid var(--slate-200);"></div>
         ${headers}
       </div>
       <div class="week-body">
@@ -227,18 +248,18 @@ function renderDay(entries){
     .filter(e => e.day === activeDay)
     .sort((a,b) => a.start.localeCompare(b.start));
   if(!dayEntries.length){
-    dayViewEl.innerHTML = '<div class="empty-note">No classes this day.</div>';
+    dayViewEl.innerHTML = '<div class="empty-note">No scheduled items verified active on this calendar indexes vector channel.</div>';
     return;
   }
   dayViewEl.innerHTML = dayEntries.map(e => `
     <div class="block ${e.type === 'lab' ? 'lab' : ''}" data-idx="${e._idx}">
-      <div>
+      <div class="block-main-details">
         <div class="time">${fmt(e.start)} – ${fmt(e.end)}</div>
         <div class="code">${escapeHtml(e.subject || '')}</div>
         <div class="desc">${escapeHtml(e.desc || e.section || '')}</div>
-        <div class="room">${escapeHtml(e.room || '')}</div>
+        <div class="room">${escapeHtml(e.room || 'Unassigned Workspace')}</div>
       </div>
-      <div class="edit-hint">tap to edit</div>
+      <div class="edit-hint">Modify Tracked Parameters</div>
     </div>`).join('');
   dayViewEl.querySelectorAll('.block').forEach(el => {
     el.addEventListener('click', () => openForm(Number(el.dataset.idx)));
@@ -250,10 +271,10 @@ function renderList(entries){
   courseList.innerHTML = entries.map((e, i) => `
     <div class="course-row">
       <div>
-        <div><strong>${escapeHtml(e.subject || '')}</strong></div>
-        <div class="meta">${e.day} · ${fmt(e.start)}-${fmt(e.end)} · ${escapeHtml(e.room || '')}</div>
+        <div class="course-title-label">${escapeHtml(e.subject || 'Untagged Block')}</div>
+        <div class="meta">${e.day} · ${fmt(e.start)} - ${fmt(e.end)} · ${escapeHtml(e.room || 'No Room')}</div>
       </div>
-      <button class="danger" data-idx="${i}">Remove</button>
+      <button class="btn btn-danger-mini" data-idx="${i}">Remove Entry</button>
     </div>`).join('');
 
   courseList.querySelectorAll('button[data-idx]').forEach(btn => {
@@ -274,7 +295,7 @@ function openForm(idx){
   editingIndex = (idx === undefined) ? null : idx;
   if(editingIndex !== null){
     const e = entries[editingIndex];
-    sheetTitle.textContent = 'Edit class';
+    sheetTitle.textContent = 'Modify Course Parameters';
     fSubject.value = e.subject || '';
     fDesc.value = e.desc || e.section || '';
     fDay.value = e.day;
@@ -283,7 +304,7 @@ function openForm(idx){
     fEnd.value = e.end;
     fRoom.value = e.room || '';
   }else{
-    sheetTitle.textContent = 'Add class';
+    sheetTitle.textContent = 'Append New Class Parameters Block';
     form.reset();
     fDay.value = activeDay || 'Mon';
     fType.value = 'lec';
@@ -311,7 +332,7 @@ form.addEventListener('submit', (ev) => {
     room: fRoom.value.trim()
   };
   if(entry.end <= entry.start){
-    alert('End time must be after start time.');
+    alert('Terminal finish parameters timestamp matrix must conclude after initialization starting boundary timeline parameters.');
     return;
   }
   const entries = loadSchedule();
@@ -327,13 +348,13 @@ form.addEventListener('submit', (ev) => {
 });
 
 clearBtn.addEventListener('click', () => {
-  if(confirm('Clear your entire schedule?')){
+  if(confirm('Purge total local relational array database indices maps definitively? This action is non-reversible.')){
     saveSchedule([]);
     render();
   }
 });
 
-// ---------- weekly / daily toggle ----------
+// ---------- weekly / daily navigation handler panel switch toggles ----------
 tabWeekly.addEventListener('click', () => {
   tabWeekly.classList.add('active'); tabDaily.classList.remove('active');
   weeklyViewEl.style.display = ''; dailyViewEl.style.display = 'none';
@@ -343,15 +364,21 @@ tabDaily.addEventListener('click', () => {
   dailyViewEl.style.display = ''; weeklyViewEl.style.display = 'none';
 });
 
-// ---------- network status ----------
+// ---------- network status tracker system ----------
 function updateNetStatus(){
-  netStatus.textContent = navigator.onLine ? 'online' : 'offline-ready';
+  const isOnline = navigator.onLine;
+  netStatus.textContent = isOnline ? 'Network Standby' : 'Offline Local Mode';
+  if(isOnline) {
+    netPulse.className = 'status-pulse-dot online';
+  } else {
+    netPulse.className = 'status-pulse-dot offline';
+  }
 }
 window.addEventListener('online', updateNetStatus);
 window.addEventListener('offline', updateNetStatus);
 updateNetStatus();
 
-// ---------- service worker ----------
+// ---------- service worker deployment setup initialization ----------
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(console.error);
