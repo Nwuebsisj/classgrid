@@ -277,7 +277,7 @@ function renderWeekly(entries, days){
       const top = (timeToMinutes(e.start) - minStart) * pxPerMin;
       const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 44);
       const isNow = isToday && nowMinutes >= timeToMinutes(e.start) && nowMinutes < timeToMinutes(e.end);
-      return `<div class="week-block" data-idx="${e._idx}" tabindex="0" role="button" aria-label="${escapeHtml(e.subject||'Class')} ${fmt(e.start)} to ${fmt(e.end)}" style="top:${top}px;height:${height}px;background:${colorForSubject(e.subject||'')};">
+      return `<div class="week-block" data-idx="${e._idx}" tabindex="0" role="button" aria-label="${escapeHtml(e.subject||'Class')} ${fmt(e.start)} to ${fmt(e.end)}" style="top:${top}px;height:${height}px;background:${colorForSubject(e.subject||'')};cursor:pointer;">
         <div class="pill">${fmt(e.start)}–${fmt(e.end)}</div>
         <div class="code">${escapeHtml(e.subject || '')}</div>
         <div class="room">${escapeHtml(e.room || '')}</div>
@@ -383,7 +383,7 @@ function openForm(idx){
     const e = entries[editingIndex];
     sheetTitle.textContent = 'Edit class';
     fSubject.value = e.subject || '';
-    fDesc.value = e.desc || e.section || '';
+    fDesc.value = e.desc || '';
     fDay.value = e.day;
     fType.value = e.type || 'lec';
     fStart.value = e.start;
