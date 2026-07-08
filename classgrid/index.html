@@ -3,78 +3,210 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ClassGrid — offline timetable</title>
-<meta name="theme-color" content="#0F2942">
+<title>ClassGrid — your week, at a glance</title>
+<meta name="theme-color" content="#5750E8">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon-192.svg">
 <link rel="apple-touch-icon" href="icons/icon-192.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app">
 
-  <header class="top">
-    <div class="mark">Class<span>Grid</span></div>
-    <div class="sub" id="net-status">offline-ready</div>
+<div class="app-shell">
+
+  <!-- ============ Desktop sidebar ============ -->
+  <aside class="sidebar" aria-label="Primary">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">CG</span>
+      <span class="brand-name">Class<span>Grid</span></span>
+    </div>
+
+    <nav class="side-nav" aria-label="Sections">
+      <a href="#dashboard" class="nav-link active" data-section="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/><rect x="13" y="13" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#upload" class="nav-link" data-section="upload">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17.5H6a3.5 3.5 0 0 1-.5-6.96A5 5 0 0 1 15 9.5v.06A4 4 0 0 1 17.5 17H17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21v-8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Upload COR</span>
+      </a>
+      <a href="#schedule" class="nav-link" data-section="schedule">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/><path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><circle cx="8" cy="13.5" r="1" fill="currentColor"/><circle cx="12" cy="13.5" r="1" fill="currentColor"/><circle cx="16" cy="13.5" r="1" fill="currentColor"/><circle cx="8" cy="17" r="1" fill="currentColor"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+        <span>Schedule</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="status-pill net-status" role="status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span class="status-text">offline-ready</span>
+      </div>
+      <p class="sidebar-note">Stored only on this device. Works fully offline once installed.</p>
+    </div>
+  </aside>
+
+  <!-- ============ Mobile top bar ============ -->
+  <header class="mobile-topbar">
+    <div class="brand brand--sm">
+      <span class="brand-mark" aria-hidden="true">CG</span>
+      <span class="brand-name">Class<span>Grid</span></span>
+    </div>
+    <div class="status-pill net-status" role="status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-text">offline-ready</span>
+    </div>
   </header>
 
-  <section class="panel">
-    <span class="tag">Step 01 — Scan</span>
-    <div class="dropzone" id="dropzone">
-      <strong>Drop or tap to upload your COR</strong>
-      <p>JPG or PNG of your registration form. Parsed on-device to a weekly grid.</p>
-    </div>
-    <input type="file" id="file-input" accept="image/*">
-    <div class="status-line" id="status"></div>
-    <img id="thumb" class="thumb" style="display:none;">
-  </section>
+  <!-- ============ Main content ============ -->
+  <main class="main">
 
-  <section class="panel">
-    <span class="tag">Step 02 — Your week</span>
+    <!-- Dashboard -->
+    <section class="section dashboard" id="dashboard">
+      <div class="dashboard-head">
+        <h1 id="greeting">Good day 👋</h1>
+        <p id="greeting-sub">Here's what your week looks like.</p>
+      </div>
 
-    <div class="view-switch">
-      <button id="tab-weekly" class="active">Weekly</button>
-      <button id="tab-daily">Daily</button>
-    </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--indigo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v13m0 0V10a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v9m0 0V13a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Sessions this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--amber" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.75"/></svg>
+          </div>
+          <div class="stat-value" id="stat-today">0</div>
+          <div class="stat-label">Classes today</div>
+        </div>
+        <div class="stat-card stat-card--wide">
+          <div class="stat-icon stat-icon--green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M13 5l6.5 7-6.5 7M4.5 12h14.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value stat-value--sm" id="stat-next-title">No classes yet</div>
+            <div class="stat-label" id="stat-next-sub">Scan your COR to get started</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--violet" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v13m0 0V10a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v9m0 0V13a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" opacity="0"/><path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-value" id="stat-hours">0h</div>
+          <div class="stat-label">Scheduled per week</div>
+        </div>
+      </div>
+    </section>
 
-    <div id="weekly-view"></div>
-    <div id="daily-view" style="display:none;">
-      <div class="day-tabs" id="day-tabs"></div>
-      <div id="day-view"></div>
-    </div>
+    <!-- Upload -->
+    <section class="section panel" id="upload">
+      <div class="panel-head">
+        <span class="eyebrow">Step 1 · Scan</span>
+        <h2>Upload your COR</h2>
+        <p class="panel-sub">JPG or PNG of your registration form. Parsed on-device into a weekly grid — nothing leaves your phone except the one-time scan.</p>
+      </div>
 
-    <button class="add" id="add-btn">+ Add class</button>
-    <div class="course-list" id="course-list"></div>
-    <div class="row-btns">
-      <button class="ghost" id="clear-btn">Clear schedule</button>
-    </div>
-  </section>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload your COR image">
+        <div class="dropzone-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M7 17.5H6a3.5 3.5 0 0 1-.5-6.96A5 5 0 0 1 15 9.5v.06A4 4 0 0 1 17.5 17H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21v-8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <strong>Drop your COR here, or tap to browse</strong>
+        <p>Supports JPG and PNG · Scanned securely, stored only on this device</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*">
 
-  <footer class="note">Stored only on this device · works fully offline once installed</footer>
+      <div class="status-line" id="status"></div>
+      <img id="thumb" class="thumb" style="display:none;" alt="Uploaded COR preview">
+    </section>
+
+    <!-- Schedule -->
+    <section class="section panel" id="schedule">
+      <div class="panel-head">
+        <span class="eyebrow">Step 2 · Review</span>
+        <h2>Your week</h2>
+        <p class="panel-sub">Tap any class to edit it, or add one manually.</p>
+      </div>
+
+      <div class="schedule-toolbar">
+        <div class="view-switch" role="tablist" aria-label="Schedule view">
+          <button id="tab-weekly" class="active" role="tab" aria-selected="true">Weekly</button>
+          <button id="tab-daily" role="tab" aria-selected="false">Daily</button>
+        </div>
+        <button class="btn btn-primary btn-add" id="add-btn">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Add class
+        </button>
+      </div>
+
+      <div id="weekly-view"></div>
+      <div id="daily-view" style="display:none;">
+        <div class="day-tabs" id="day-tabs"></div>
+        <div id="day-view"></div>
+      </div>
+
+      <div class="course-list-wrap">
+        <div class="course-list-head">
+          <h3>All sessions</h3>
+        </div>
+        <div class="course-list" id="course-list"></div>
+      </div>
+
+      <div class="row-btns row-btns--end">
+        <button class="btn btn-ghost btn-danger-ghost" id="clear-btn">Clear schedule</button>
+      </div>
+    </section>
+
+    <footer class="app-footer">Stored only on this device · works fully offline once installed</footer>
+  </main>
+
+  <!-- ============ Mobile bottom nav ============ -->
+  <nav class="mobile-bottomnav" aria-label="Sections">
+    <a href="#dashboard" class="bottom-link active" data-section="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/><rect x="13" y="13" width="7.5" height="7.5" rx="2" stroke="currentColor" stroke-width="1.75"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#upload" class="bottom-link" data-section="upload">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17.5H6a3.5 3.5 0 0 1-.5-6.96A5 5 0 0 1 15 9.5v.06A4 4 0 0 1 17.5 17H17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21v-8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Upload</span>
+    </a>
+    <a href="#schedule" class="bottom-link" data-section="schedule">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/><path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+      <span>Schedule</span>
+    </a>
+  </nav>
+
 </div>
 
+<!-- ============ Add / Edit sheet ============ -->
 <div class="overlay" id="overlay">
-  <div class="sheet">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-handle" aria-hidden="true"></div>
     <h3 id="sheet-title">Add class</h3>
-    <form id="entry-form">
+    <form id="entry-form" novalidate>
       <div class="field">
-        <label>Subject code</label>
+        <label for="f-subject">Subject code</label>
         <input type="text" id="f-subject" required placeholder="e.g. CRI 169">
+        <div class="field-error" data-error-for="f-subject">Subject code is required.</div>
       </div>
       <div class="field">
-        <label>Description</label>
+        <label for="f-desc">Description</label>
         <input type="text" id="f-desc" placeholder="e.g. Fund. of Criminal Investigation">
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Day</label>
+          <label for="f-day">Day</label>
           <select id="f-day">
             <option>Mon</option><option>Tue</option><option>Wed</option>
             <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
           </select>
         </div>
         <div class="field">
-          <label>Type</label>
+          <label for="f-type">Type</label>
           <select id="f-type">
             <option value="lec">Lecture</option>
             <option value="lab">Lab</option>
@@ -83,21 +215,22 @@
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Start time</label>
+          <label for="f-start">Start time</label>
           <input type="time" id="f-start" required>
         </div>
         <div class="field">
-          <label>End time</label>
+          <label for="f-end">End time</label>
           <input type="time" id="f-end" required>
         </div>
+        <div class="field-error" data-error-for="f-time">End time must be after start time.</div>
       </div>
       <div class="field">
-        <label>Room</label>
+        <label for="f-room">Room</label>
         <input type="text" id="f-room" placeholder="e.g. BL 202">
       </div>
       <div class="row-btns">
-        <button type="button" class="ghost" id="cancel-btn">Cancel</button>
-        <button type="submit">Save</button>
+        <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-btn">Save class</button>
       </div>
     </form>
   </div>
