@@ -32,6 +32,7 @@ const overlay = document.getElementById('overlay');
 const sheetTitle = document.getElementById('sheet-title');
 const form = document.getElementById('entry-form');
 const fSubject = document.getElementById('f-subject');
+const fSection = document.getElementById('f-section');
 const fDesc = document.getElementById('f-desc');
 const fDay = document.getElementById('f-day');
 const fType = document.getElementById('f-type');
@@ -159,6 +160,11 @@ function formatDuration(totalMinutes){
   if(h <= 0) return `${m}m`;
   return m ? `${h}h ${m}m` : `${h}h`;
 }
+// Builds the "CRI 169 · Sec A" style label used across every view.
+function subjectLabel(e){
+  const subject = escapeHtml(e.subject || '');
+  return e.section ? `${subject} <span class="section-tag">Sec ${escapeHtml(e.section)}</span>` : subject;
+}
 
 // ---------- rendering ----------
 function render(){
@@ -279,7 +285,7 @@ function renderWeekly(entries, days){
       const isNow = isToday && nowMinutes >= timeToMinutes(e.start) && nowMinutes < timeToMinutes(e.end);
       return `<div class="week-block" data-idx="${e._idx}" tabindex="0" role="button" aria-label="${escapeHtml(e.subject||'Class')} ${fmt(e.start)} to ${fmt(e.end)}" style="top:${top}px;height:${height}px;background:${colorForSubject(e.subject||'')};cursor:pointer;">
         <div class="pill">${fmt(e.start)}–${fmt(e.end)}</div>
-        <div class="code">${escapeHtml(e.subject || '')}</div>
+        <div class="code">${subjectLabel(e)}</div>
         <div class="room">${escapeHtml(e.room || '')}</div>
         ${isNow ? '<div class="now-badge">Now</div>' : ''}
       </div>`;
@@ -332,8 +338,8 @@ function renderDay(entries){
     <div class="block ${e.type === 'lab' ? 'lab' : ''}" data-idx="${e._idx}" tabindex="0" role="button">
       <div>
         <div class="time">${fmt(e.start)} – ${fmt(e.end)}</div>
-        <div class="code">${escapeHtml(e.subject || '')}</div>
-        <div class="desc">${escapeHtml(e.desc || e.section || '')}</div>
+        <div class="code">${subjectLabel(e)}</div>
+        ${e.desc ? `<div class="desc">${escapeHtml(e.desc)}</div>` : ''}
         <div class="room">${escapeHtml(e.room || '')}</div>
       </div>
       <div class="edit-hint">tap to edit</div>
@@ -351,7 +357,7 @@ function renderList(entries){
   courseList.innerHTML = entries.map((e, i) => `
     <div class="course-row">
       <div>
-        <div class="title-line"><span class="swatch" style="background:${colorForSubject(e.subject||'')};"></span><strong>${escapeHtml(e.subject || '')}</strong></div>
+        <div class="title-line"><span class="swatch" style="background:${colorForSubject(e.subject||'')};"></span><strong>${subjectLabel(e)}</strong></div>
         <div class="meta">${e.day} · ${fmt(e.start)}–${fmt(e.end)} · ${escapeHtml(e.room || '')}</div>
       </div>
       <button class="danger" data-idx="${i}">Remove</button>
@@ -383,6 +389,7 @@ function openForm(idx){
     const e = entries[editingIndex];
     sheetTitle.textContent = 'Edit class';
     fSubject.value = e.subject || '';
+    fSection.value = e.section || '';
     fDesc.value = e.desc || '';
     fDay.value = e.day;
     fType.value = e.type || 'lec';
@@ -433,6 +440,7 @@ form.addEventListener('submit', (ev) => {
 
   const entry = {
     subject: fSubject.value.trim(),
+    section: fSection.value.trim(),
     desc: fDesc.value.trim(),
     day: fDay.value,
     type: fType.value,
