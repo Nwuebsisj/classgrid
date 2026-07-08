@@ -821,6 +821,7 @@ button.add:hover:not(:disabled) {
   padding: var(--space-lg);
   border-bottom: 1px solid var(--border-light);
   transition: all var(--transition-fast);
+  gap: var(--space-lg);
 }
 
 .course-row:hover {
@@ -831,11 +832,19 @@ button.add:hover:not(:disabled) {
   border-bottom: none;
 }
 
+.course-row > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
 .course-row strong {
   display: block;
   color: var(--text-primary);
   font-weight: 600;
   margin-bottom: var(--space-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .course-row .meta {
@@ -843,6 +852,9 @@ button.add:hover:not(:disabled) {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .course-row button {
@@ -1190,16 +1202,17 @@ footer.note {
   }
 
   .course-row {
-    padding: var(--space-md);
     flex-wrap: wrap;
     gap: var(--space-sm);
+  }
+
+  .course-row > div:first-child {
+    flex-basis: 100%;
   }
 
   .course-row button {
     padding: 5px 10px;
     font-size: 11px;
-    order: 3;
-    flex-basis: 100%;
   }
 
   button {
