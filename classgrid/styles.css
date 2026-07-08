@@ -102,7 +102,7 @@ button.add{background:var(--orange);width:100%;margin-top:6px;}
   position:absolute;left:0;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
   color:var(--muted);transform:translateY(-50%);
 }
-.day-col{flex:1;min-width:110px;position:relative;border-left:1px solid #d7dee0;}
+.day-col{flex:1;min-width:85px;position:relative;border-left:1px solid #d7dee0;}
 .day-header{
   text-align:center;padding:8px 0;border-radius:8px 8px 0 0;
   font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;
@@ -113,8 +113,8 @@ button.add{background:var(--orange);width:100%;margin-top:6px;}
   display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--orange);
   margin-left:4px;vertical-align:middle;
 }
-.week-headers{display:flex;min-width:760px;}
-.week-body{display:flex;position:relative;min-width:760px;}
+.week-headers{display:flex;min-width:640px;}
+.week-body{display:flex;position:relative;min-width:640px;}
 
 .week-block{
   position:absolute;left:3px;right:3px;border-radius:10px;padding:7px 8px;
