@@ -1,5 +1,5 @@
 // Netlify function: POST { image: base64, mediaType: 'image/jpeg' }
-// Returns: { entries: [ { subject, section, room, type, day, start, end } ] }
+// Returns: { entries: [ { subject, section, desc, room, type, day, start, end } ] }
 //
 // Requires env var GEMINI_API_KEY set in Netlify site settings.
 // Get a free key at https://aistudio.google.com/apikey
@@ -10,14 +10,17 @@ Key parsing rule: the Day and Time columns often hold two values separated by "/
 
 For each row in the schedule table, emit one JSON object per session (so a "Thu/Fri" row produces 2 objects, one for Thu and one for Fri):
 {
-  "subject": "<subject code>",
+  "subject": "<subject code, e.g. 'CRI 169'>",
   "section": "<section code, if present>",
+  "desc": "<the class's full title/description text from the Description column, e.g. 'Fundamentals of Criminal Investigation and Intelligence'>",
   "room": "<room for that specific session>",
   "type": "lec" or "lab" (guess "lab" only if the row's Lab hour column is non-zero and this session corresponds to the lab hours, otherwise "lec"),
   "day": one of "Mon","Tue","Wed","Thu","Fri","Sat","Sun",
   "start": "HH:MM" in 24-hour time,
   "end": "HH:MM" in 24-hour time
 }
+
+Always populate "desc" from the Description column if the table has one — never leave it as an empty string when a description is visible in the image. Do not abbreviate or invent it; copy the description text as printed.
 
 Convert all times to 24-hour "HH:MM" (e.g. "08:00 PM" -> "20:00", "07:30 AM" -> "07:30").
 If a row lists two rooms separated by "/", pair them the same way as day/time (first room with first day/time, second room with second).
@@ -59,13 +62,36 @@ exports.handler = async function (event) {
               role: 'user',
               parts: [
                 { inlineData: { mimeType: mediaType || 'image/jpeg', data: image } },
-                { text: 'Extract every class session from this registration form as instructed.' }
+                { text: 'Extract every class session from this registration form as instructed. Make sure every entry includes its "desc" from the Description column.' }
               ]
             }
           ],
           generationConfig: {
             temperature: 0,
-            responseMimeType: 'application/json'
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              properties: {
+                entries: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      subject: { type: 'STRING' },
+                      section: { type: 'STRING' },
+                      desc: { type: 'STRING' },
+                      room: { type: 'STRING' },
+                      type: { type: 'STRING', enum: ['lec', 'lab'] },
+                      day: { type: 'STRING', enum: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
+                      start: { type: 'STRING' },
+                      end: { type: 'STRING' }
+                    },
+                    required: ['subject', 'day', 'start', 'end']
+                  }
+                }
+              },
+              required: ['entries']
+            }
           }
         })
       }
