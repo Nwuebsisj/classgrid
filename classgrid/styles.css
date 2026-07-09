@@ -258,7 +258,6 @@ button.danger{background:var(--red);color:#fff;border:none;border-radius:7px;pad
   font-family:'IBM Plex Mono',monospace;font-size:11px;display:inline-block;margin-bottom:5px;
 }
 .week-block .code{font-weight:700;font-size:15.5px;line-height:1.25;}
-.week-block .section-tag{display:block;font-weight:500;font-size:11.5px;opacity:.85;margin-top:1px;}
 .section-tag{font-weight:500;font-size:11.5px;opacity:.85;}
 .week-block .room{font-size:11.5px;opacity:.9;margin-top:4px;}
 .week-block .now-badge{
