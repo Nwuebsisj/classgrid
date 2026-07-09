@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ClassGrid — your week, at a glance</title>
+<title>Schedule Wise — your week, at a glance</title>
 <meta name="theme-color" content="#5750E8">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon-192.svg">
@@ -19,8 +19,8 @@
   <!-- ============ Desktop sidebar ============ -->
   <aside class="sidebar" aria-label="Primary">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true">CG</span>
-      <span class="brand-name">Class<span>Grid</span></span>
+      <span class="brand-mark" aria-hidden="true">SW</span>
+      <span class="brand-name">SCHEDULE<span>WISE</span></span>
     </div>
 
     <nav class="side-nav" aria-label="Sections">
@@ -30,7 +30,7 @@
       </a>
       <a href="#upload" class="nav-link" data-section="upload">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17.5H6a3.5 3.5 0 0 1-.5-6.96A5 5 0 0 1 15 9.5v.06A4 4 0 0 1 17.5 17H17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v6m0-6l2-2m-2 2l-2-2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Upload COR</span>
+        <span>Upload ORF</span>
       </a>
       <a href="#schedule" class="nav-link" data-section="schedule">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/><path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
@@ -50,8 +50,8 @@
   <!-- ============ Mobile top bar ============ -->
   <header class="mobile-topbar">
     <div class="brand brand--sm">
-      <span class="brand-mark" aria-hidden="true">CG</span>
-      <span class="brand-name">Class<span>Grid</span></span>
+      <span class="brand-mark" aria-hidden="true">SW</span>
+      <span class="brand-name">Schedule<span>Wise</span></span>
     </div>
     <div class="status-pill net-status" role="status">
       <span class="status-dot" aria-hidden="true"></span>
@@ -90,7 +90,7 @@
           </div>
           <div class="stat-body">
             <div class="stat-value stat-value--sm" id="stat-next-title">No classes yet</div>
-            <div class="stat-label" id="stat-next-sub">Scan your COR to get started</div>
+            <div class="stat-label" id="stat-next-sub">Scan your ORF to get started</div>
           </div>
         </div>
         <div class="stat-card">
@@ -107,21 +107,21 @@
     <section class="section panel" id="upload">
       <div class="panel-head">
         <span class="eyebrow">Step 1 · Scan</span>
-        <h2>Upload your COR</h2>
+        <h2>Upload your ORF</h2>
         <p class="panel-sub">JPG or PNG of your registration form. Parsed on-device into a weekly grid — nothing leaves your phone except the one-time scan.</p>
       </div>
 
-      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload your COR image">
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload your ORF image">
         <div class="dropzone-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none"><path d="M7 17.5H6a3.5 3.5 0 0 1-.5-6.96A5 5 0 0 1 15 9.5v.06A4 4 0 0 1 17.5 17H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v6m0-6l2-2m-2 2l-2-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <strong>Drop your COR here, or tap to browse</strong>
+        <strong>Drop your ORF here, or tap to browse</strong>
         <p>Supports JPG and PNG · Scanned securely, stored only on this device</p>
       </div>
       <input type="file" id="file-input" accept="image/*">
 
       <div class="status-line" id="status"></div>
-      <img id="thumb" class="thumb" style="display:none;" alt="Uploaded COR preview">
+      <img id="thumb" class="thumb" style="display:none;" alt="Uploaded ORF preview">
     </section>
 
     <!-- Schedule -->
