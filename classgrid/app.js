@@ -104,7 +104,7 @@ async function handleFile(file){
   setStatus('Reading image…', 'loading');
   try{
     const base64 = await fileToBase64(file);
-    setStatus('Parsing schedule with AI…', 'loading');
+    setStatus('Extracting your schedule…', 'loading');
     const res = await fetch(PARSE_ENDPOINT, {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'X-App-Token': APP_TOKEN},
