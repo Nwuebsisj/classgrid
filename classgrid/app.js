@@ -5,7 +5,7 @@ const PARSE_ENDPOINT = '/.netlify/functions/parse-schedule';
 // stops casual/automated probing. Change this string, and update the same
 // value as APP_TOKEN in your Netlify environment variables, to make it
 // specific to your deployment.
-const APP_TOKEN = 'classgrid-charles-2026';
+const APP_TOKEN = 'schedulewise2026';
 const STORAGE_KEY = 'classgrid.schedule.v1';
 const DAY_ORDER = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAY_FULL = { Mon:'Monday', Tue:'Tuesday', Wed:'Wednesday', Thu:'Thursday', Fri:'Friday', Sat:'Saturday', Sun:'Sunday' };
