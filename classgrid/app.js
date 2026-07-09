@@ -513,11 +513,13 @@ if('IntersectionObserver' in window && navSections.length){
   navSections.forEach(sec => spy.observe(sec));
 }
 
-// ---------- service worker ----------
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(console.error);
-  });
-}
-
 render();
+
+// Keep the "now" line/badge and greeting accurate without needing any user
+// action or network — this is pure client-side time, works offline too.
+setInterval(() => {
+  // Skip re-rendering while the edit sheet is open so we don't yank focus
+  // out from under someone mid-edit.
+  if(overlay.classList.contains('open')) return;
+  render();
+}, 60000);
