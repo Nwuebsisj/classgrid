@@ -281,7 +281,7 @@ function renderWeekly(entries, days){
     const dayEntries = entries.map((e,i)=>({...e,_idx:i})).filter(e => e.day === day);
     const blocks = dayEntries.map(e => {
       const top = (timeToMinutes(e.start) - minStart) * pxPerMin;
-      const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 74);
+      const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 56);
       const isNow = isToday && nowMinutes >= timeToMinutes(e.start) && nowMinutes < timeToMinutes(e.end);
       return `<div class="week-block" data-idx="${e._idx}" tabindex="0" role="button" aria-label="${escapeHtml(e.subject||'Class')} ${fmt(e.start)} to ${fmt(e.end)}" style="top:${top}px;height:${height}px;background:${colorForSubject(e.subject||'')};cursor:pointer;">
         <div class="pill">${fmt(e.start)}–${fmt(e.end)}</div>
@@ -299,7 +299,7 @@ function renderWeekly(entries, days){
   weeklyViewEl.innerHTML = `
     <div class="week-scroll">
       <div class="week-headers">
-        <div style="width:44px;flex-shrink:0;"></div>
+        <div style="width:38px;flex-shrink:0;"></div>
         ${headers}
       </div>
       <div class="week-body">
