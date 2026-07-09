@@ -1,4 +1,11 @@
 const PARSE_ENDPOINT = '/.netlify/functions/parse-schedule';
+// Lightweight deterrent against random bots/scanners hitting the function
+// directly and burning your Gemini quota. Not real security — this value
+// ships to the browser and anyone who opens dev tools can read it — but it
+// stops casual/automated probing. Change this string, and update the same
+// value as APP_TOKEN in your Netlify environment variables, to make it
+// specific to your deployment.
+const APP_TOKEN = 'classgrid-charles-2026';
 const STORAGE_KEY = 'classgrid.schedule.v1';
 const DAY_ORDER = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAY_FULL = { Mon:'Monday', Tue:'Tuesday', Wed:'Wednesday', Thu:'Thursday', Fri:'Friday', Sat:'Saturday', Sun:'Sunday' };
@@ -100,7 +107,7 @@ async function handleFile(file){
     setStatus('Parsing schedule with AI…', 'loading');
     const res = await fetch(PARSE_ENDPOINT, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type':'application/json', 'X-App-Token': APP_TOKEN},
       body: JSON.stringify({ image: base64, mediaType: file.type || 'image/jpeg' })
     });
     if(!res.ok) throw new Error('Server returned ' + res.status);
