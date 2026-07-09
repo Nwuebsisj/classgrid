@@ -1,7 +1,7 @@
 {
-  "name": "ClassGrid",
-  "short_name": "ClassGrid",
-  "description": "Snap your COR, get your weekly timetable.",
+  "name": "ScheduleWise",
+  "short_name": "ScheduleWise",
+  "description": "Snap your ORF, get your weekly timetable.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
