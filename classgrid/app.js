@@ -272,8 +272,8 @@ function renderWeekly(entries, days){
   }
 
   const headers = days.map(d => `
-    <div style="flex:1;min-width:118px;">
-      <div class="day-header${d===TODAY_DAY?' today':''}">${d}${d===TODAY_DAY?'<span class="dot"></span>':''}</div>
+    <div class="head-col">
+      <div class="day-header${d===TODAY_DAY?' today':''}">${d}<span class="dot"></span></div>
     </div>`).join('');
 
   const cols = days.map(day => {
@@ -281,7 +281,7 @@ function renderWeekly(entries, days){
     const dayEntries = entries.map((e,i)=>({...e,_idx:i})).filter(e => e.day === day);
     const blocks = dayEntries.map(e => {
       const top = (timeToMinutes(e.start) - minStart) * pxPerMin;
-      const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 44);
+      const height = Math.max((timeToMinutes(e.end) - timeToMinutes(e.start)) * pxPerMin, 74);
       const isNow = isToday && nowMinutes >= timeToMinutes(e.start) && nowMinutes < timeToMinutes(e.end);
       return `<div class="week-block" data-idx="${e._idx}" tabindex="0" role="button" aria-label="${escapeHtml(e.subject||'Class')} ${fmt(e.start)} to ${fmt(e.end)}" style="top:${top}px;height:${height}px;background:${colorForSubject(e.subject||'')};cursor:pointer;">
         <div class="pill">${fmt(e.start)}–${fmt(e.end)}</div>
