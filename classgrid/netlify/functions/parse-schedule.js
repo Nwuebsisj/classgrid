@@ -35,6 +35,15 @@ exports.handler = async function (event) {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
+  // Lightweight deterrent, not real auth: blocks bots/scanners hitting this
+  // URL directly without going through the app, so they can't burn your
+  // Gemini quota for free. Requires APP_TOKEN set in Netlify env vars,
+  // matching the APP_TOKEN constant in app.js.
+  const providedToken = event.headers['x-app-token'] || event.headers['X-App-Token'];
+  if (!process.env.APP_TOKEN || providedToken !== process.env.APP_TOKEN) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) };
+  }
+
   let payload;
   try {
     payload = JSON.parse(event.body);
